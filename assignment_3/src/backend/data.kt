@@ -35,5 +35,11 @@ class FuncData(
 }
 
 
+class ArrayData(val elements: MutableList<Data>) : Data() {
+    override fun toString(): String = "$elements"
+}
+
+
+
 
 
