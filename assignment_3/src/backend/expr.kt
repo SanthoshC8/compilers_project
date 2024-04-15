@@ -274,3 +274,17 @@ class ArrayDelete(val arrayName: String, val value: Expr) : Expr() {
     
     }
 }
+
+
+class TypeExpr(val expr: Expr) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val result = expr.eval(runtime)
+        return StringData(when (result) {
+            is IntData -> "<class 'int'>"
+            is StringData -> "<class 'string'>"
+            is ArrayData -> "<class 'array'>"
+            is BooleanData -> "<class 'boolean'>"
+            else -> "<unknown class>"
+        })
+    }
+}
