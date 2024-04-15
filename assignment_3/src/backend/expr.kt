@@ -327,6 +327,8 @@ class TypeExpr(val expr: Expr) : Expr() {
             is StringData -> "<class 'string'>"
             is ArrayData -> "<class 'array'>"
             is BooleanData -> "<class 'boolean'>"
+            is TupleData -> "<class 'tuple'>"
+            is SetData -> "<class 'set'>"
             else -> "<unknown class>"
         })
     }
@@ -340,5 +342,29 @@ class SizeExpr(val expr: Expr) : Expr() {
             is StringData -> IntData(result.value.length) 
             else -> IntData(1)
         }
+    }
+}
+
+
+class TupleLiteral(val elements: List<Expr>) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val evaluatedElements = elements.map { it.eval(runtime) }.toList() 
+        return TupleData(evaluatedElements)
+    }
+}
+
+
+class SetLiteral(val elements: List<Expr>) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val uniqueElements = mutableSetOf<String>() 
+        val finalSet = mutableListOf<Data>()
+        elements.map { it.eval(runtime) }.forEach { data ->
+            val dataString = data.toString()
+            if (dataString !in uniqueElements) {
+                uniqueElements.add(dataString)
+                finalSet.add(data)
+            }
+        }
+        return SetData(finalSet.toHashSet())
     }
 }
