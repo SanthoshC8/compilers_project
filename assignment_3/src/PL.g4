@@ -25,6 +25,7 @@ statement returns [Expr statementExpr]
     | funDef { $statementExpr = $funDef.funcResult; }
     | printStmt ';'? { $statementExpr = $printStmt.printExpr; } 
     | arrayAppend ';' { $statementExpr = $arrayAppend.arrayAppendExpr; }
+    | arrayDeleteAtIndex ';' { $statementExpr = $arrayDeleteAtIndex.arrayDeleteAtIndexExpr; }
     | arrayDelete ';' { $statementExpr = $arrayDelete.arrayDeleteExpr; }
     ;
     
@@ -46,7 +47,10 @@ expression returns [Expr exprValue]
     | e1= expression '++' e2=expression { $exprValue = new Arithmetic(Operator.Concat, $e1.exprValue, $e2.exprValue);}
     | funCall { $exprValue = $funCall.funCallExpr; }
     | arrayLiteral { $exprValue = $arrayLiteral.arrayExpr; }
+    | 'size' '(' expression ')' { $exprValue = new SizeExpr($expression.exprValue); }
     | 'type' '(' expression ')' { $exprValue = new TypeExpr($expression.exprValue); }
+    | ID '[' e1=expression '..' e2=expression ']' { $exprValue = new ArrayRange($ID.text, $e1.exprValue, $e2.exprValue); }
+    | ID '[' index= expression ']' { $exprValue = new ArrayAtValue($ID.text, $index.exprValue); }
     | ID { $exprValue = new Deref($ID.text); }
     | NUMERIC {$exprValue = new IntLiteral($NUMERIC.text); }
     | STRING {$exprValue = new StringLiteral($STRING.text); }
@@ -119,6 +123,12 @@ arrayAppend returns [Expr arrayAppendExpr]
         $arrayAppendExpr = new ArrayAppend($ID.text, $argument.exprValue);
     }
     ;
+    
+arrayDeleteAtIndex returns [Expr arrayDeleteAtIndexExpr]
+    : ID '.deleteAtIndex' '(' index=expression ')' {
+        $arrayDeleteAtIndexExpr = new ArrayDeleteAtIndex($ID.text, $index.exprValue);
+    }
+    ; 
     
 arrayDelete returns [Expr arrayDeleteExpr]
     : ID '.delete' '(' argument=expression ')' {
