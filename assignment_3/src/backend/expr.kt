@@ -230,6 +230,7 @@ class Loop(
     }
 }
 
+
 class ArrayLiteral(val elements: List<Expr>) : Expr() {
     override fun eval(runtime: Runtime): Data {
         val evaluatedElements = elements.map { it.eval(runtime) }.toMutableList() 
@@ -275,6 +276,48 @@ class ArrayDelete(val arrayName: String, val value: Expr) : Expr() {
     }
 }
 
+class ArrayDeleteAtIndex(val arrayName: String, val indexExpr: Expr) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val arrayData = runtime.symbolTable[arrayName] as ArrayData
+
+        val index = indexExpr.eval(runtime) as IntData
+
+        if (index.value >= 0 && index.value < arrayData.elements.size) {
+            arrayData.elements.removeAt(index.value)
+        } else {
+            throw Exception("error: index out of bounds")
+        }
+        
+        return None  
+    }
+}
+
+class ArrayAtValue(val arrayName: String, val indexExpr: Expr) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val arrayData = (runtime.symbolTable[arrayName] as ArrayData).elements
+        val index = (indexExpr.eval(runtime) as IntData).value
+        
+        if (index < 0 || index >= arrayData.size) {
+            throw Exception("error: index out of bounds")
+        }
+
+        return arrayData[index]
+    }
+}
+
+class ArrayRange(val arrayName: String, val start: Expr, val end: Expr) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val arrayData = (runtime.symbolTable[arrayName] as ArrayData).elements
+        val startIndex = (start.eval(runtime) as IntData).value 
+        val endIndex = (end.eval(runtime) as IntData).value
+
+        if (startIndex < 0 || endIndex > arrayData.size) {
+            throw Exception("error: index out of bounds")
+        }
+
+        return ArrayData(ArrayList(arrayData.subList(startIndex, endIndex)))
+    }
+}
 
 class TypeExpr(val expr: Expr) : Expr() {
     override fun eval(runtime: Runtime): Data {
@@ -286,5 +329,16 @@ class TypeExpr(val expr: Expr) : Expr() {
             is BooleanData -> "<class 'boolean'>"
             else -> "<unknown class>"
         })
+    }
+}
+
+class SizeExpr(val expr: Expr) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val result = expr.eval(runtime)
+        return when (result) {
+            is ArrayData -> IntData(result.elements.size)  
+            is StringData -> IntData(result.value.length) 
+            else -> IntData(1)
+        }
     }
 }
