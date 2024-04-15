@@ -229,3 +229,48 @@ class Loop(
         return result
     }
 }
+
+class ArrayLiteral(val elements: List<Expr>) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val evaluatedElements = elements.map { it.eval(runtime) }.toMutableList() 
+        return ArrayData(evaluatedElements)
+    }
+}
+
+class ArrayAppend(val arrayName: String, val element: Expr) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val arrayData = runtime.symbolTable[arrayName] as? ArrayData
+        if (arrayData != null) {
+            val value = element.eval(runtime)
+            arrayData.elements.add(value)
+        } else {
+            println("error")
+        }
+        return None
+    }
+}
+
+class ArrayDelete(val arrayName: String, val value: Expr) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val arrayData = runtime.symbolTable[arrayName] as? ArrayData
+        if (arrayData != null) {
+            val elementValue = value.eval(runtime)
+            val index = when (elementValue) {
+                is IntData -> arrayData.elements.indexOfFirst { it is IntData && it.value == elementValue.value }
+                is StringData -> arrayData.elements.indexOfFirst { it is StringData && it.value == elementValue.value }
+                else -> 0
+            }
+
+            if (index != -1) {
+                arrayData.elements.removeAt(index)
+            } else {
+                println("error no value in array")
+            }
+        } else {
+            println("error")
+        }
+        return None
+        
+    
+    }
+}
