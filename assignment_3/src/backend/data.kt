@@ -22,8 +22,6 @@ class BooleanData(val value:Boolean): Data() {
 
 
 
-
-
 class FuncData(
     val name: String,
     val params: List<String>,
@@ -38,6 +36,23 @@ class FuncData(
 
 class ArrayData(val elements: MutableList<Data>) : Data() {
     override fun toString(): String = "$elements"
+}
+
+class TupleData(val elements: List<Data>) : Data() {
+    override fun toString(): String{
+        return elements.joinToString(separator = ", ", prefix = "(", postfix = ")") {
+            it.toString()
+        }
+    }
+}
+
+
+class SetData(val elements: Set<Data>) : Data() {
+    override fun toString(): String {
+        return elements.joinToString(separator = ", ", prefix = "{", postfix = "}") {
+            it.toString()
+        }
+    }
 }
 
 
