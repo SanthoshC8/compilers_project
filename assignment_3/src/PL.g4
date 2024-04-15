@@ -46,7 +46,9 @@ expression returns [Expr exprValue]
     | e1= expression '/' e2=expression { $exprValue = new Arithmetic(Operator.Div, $e1.exprValue, $e2.exprValue);}
     | e1= expression '++' e2=expression { $exprValue = new Arithmetic(Operator.Concat, $e1.exprValue, $e2.exprValue);}
     | funCall { $exprValue = $funCall.funCallExpr; }
+    | tupleLiteral { $exprValue = $tupleLiteral.tupleExpr; }
     | arrayLiteral { $exprValue = $arrayLiteral.arrayExpr; }
+    | setLiteral { $exprValue = $setLiteral.setExpr; }
     | 'size' '(' expression ')' { $exprValue = new SizeExpr($expression.exprValue); }
     | 'type' '(' expression ')' { $exprValue = new TypeExpr($expression.exprValue); }
     | ID '[' e1=expression '..' e2=expression ']' { $exprValue = new ArrayRange($ID.text, $e1.exprValue, $e2.exprValue); }
@@ -101,7 +103,18 @@ argList returns [List<Expr> argListExpr]
 funCall returns [Expr funCallExpr]
     : ID '(' argList ')' { $funCallExpr = new Invoke($ID.text, $argList.argListExpr); }
     ; 
-    
+
+tupleLiteral returns [Expr tupleExpr]
+    : '(' firstElement=expression (',' nextElement+=expression)* ')' {
+        List<Expr> elementExprs = new ArrayList<>();
+        elementExprs.add($firstElement.exprValue);     
+        for (ExpressionContext ec : $nextElement) {
+            elementExprs.add(ec.exprValue);
+        }      
+
+        $tupleExpr = new TupleLiteral(elementExprs);
+    }
+    ; 
     
 arrayLiteral returns [Expr arrayExpr]
     : '[' firstElement=expression (',' nextElement+=expression)* ']' {
@@ -116,7 +129,18 @@ arrayLiteral returns [Expr arrayExpr]
         $arrayExpr = new ArrayLiteral(elementExprs);
     }
     ; 
-    
+   
+   
+setLiteral returns [Expr setExpr]
+    : '{' elements+=expression (',' elements+=expression)* '}' {
+        List<Expr> elementExprs = new ArrayList<>();
+        for (ExpressionContext ec : $elements) {
+            elementExprs.add(ec.exprValue);
+        }      
+        $setExpr = new SetLiteral(elementExprs);
+    }
+    ;
+
     
 arrayAppend returns [Expr arrayAppendExpr]
     : ID '.append' '(' argument=expression ')' {
@@ -134,7 +158,9 @@ arrayDelete returns [Expr arrayDeleteExpr]
     : ID '.delete' '(' argument=expression ')' {
         $arrayDeleteExpr = new ArrayDelete($ID.text, $argument.exprValue);
     }
-    ;    
+    ;
+    
+
 
     
 NUMERIC : ('0' .. '9')+ ;
