@@ -24,6 +24,8 @@ statement returns [Expr statementExpr]
     | loop { $statementExpr = $loop.loopResult; }
     | funDef { $statementExpr = $funDef.funcResult; }
     | printStmt ';'? { $statementExpr = $printStmt.printExpr; } 
+    | arrayAppend ';' { $statementExpr = $arrayAppend.arrayAppendExpr; }
+    | arrayDelete ';' { $statementExpr = $arrayDelete.arrayDeleteExpr; }
     ;
     
     
@@ -43,6 +45,7 @@ expression returns [Expr exprValue]
     | e1= expression '/' e2=expression { $exprValue = new Arithmetic(Operator.Div, $e1.exprValue, $e2.exprValue);}
     | e1= expression '++' e2=expression { $exprValue = new Arithmetic(Operator.Concat, $e1.exprValue, $e2.exprValue);}
     | funCall { $exprValue = $funCall.funCallExpr; }
+    | arrayLiteral { $exprValue = $arrayLiteral.arrayExpr; }
     | ID { $exprValue = new Deref($ID.text); }
     | NUMERIC {$exprValue = new IntLiteral($NUMERIC.text); }
     | STRING {$exprValue = new StringLiteral($STRING.text); }
@@ -93,6 +96,35 @@ argList returns [List<Expr> argListExpr]
 funCall returns [Expr funCallExpr]
     : ID '(' argList ')' { $funCallExpr = new Invoke($ID.text, $argList.argListExpr); }
     ; 
+    
+    
+arrayLiteral returns [Expr arrayExpr]
+    : '[' firstElement=expression (',' nextElement+=expression)* ']' {
+        List<Expr> elementExprs = new ArrayList<>();
+        elementExprs.add($firstElement.exprValue);
+        if ($nextElement != null) { 
+            for (ExpressionContext ec : $nextElement) {
+                elementExprs.add(ec.exprValue);
+            }
+        }
+
+        $arrayExpr = new ArrayLiteral(elementExprs);
+    }
+    ; 
+    
+    
+arrayAppend returns [Expr arrayAppendExpr]
+    : ID '.append' '(' argument=expression ')' {
+        $arrayAppendExpr = new ArrayAppend($ID.text, $argument.exprValue);
+    }
+    ;
+    
+arrayDelete returns [Expr arrayDeleteExpr]
+    : ID '.delete' '(' argument=expression ')' {
+        $arrayDeleteExpr = new ArrayDelete($ID.text, $argument.exprValue);
+    }
+    ;    
+
     
 NUMERIC : ('0' .. '9')+ ;
 
