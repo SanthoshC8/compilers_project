@@ -46,6 +46,7 @@ expression returns [Expr exprValue]
     | e1= expression '++' e2=expression { $exprValue = new Arithmetic(Operator.Concat, $e1.exprValue, $e2.exprValue);}
     | funCall { $exprValue = $funCall.funCallExpr; }
     | arrayLiteral { $exprValue = $arrayLiteral.arrayExpr; }
+    | 'type' '(' expression ')' { $exprValue = new TypeExpr($expression.exprValue); }
     | ID { $exprValue = new Deref($ID.text); }
     | NUMERIC {$exprValue = new IntLiteral($NUMERIC.text); }
     | STRING {$exprValue = new StringLiteral($STRING.text); }
