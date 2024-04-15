@@ -17,9 +17,10 @@ class IntData(val value:Int): Data() {
 
 
 class BooleanData(val value:Boolean): Data() {
-    override fun toString() = 
-    "Boolean:${value}"
+    override fun toString() = "$value"
 }
+
+
 
 
 
