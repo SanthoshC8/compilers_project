@@ -17,4 +17,21 @@ To use the interpreter, you'll need to have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/programming-language-interpreter.git
+   git clone https://github.com/SanthoshC8/compilers_project.git 
+
+## Build the project:
+
+```bash
+make build
+
+## Usage
+# Run a Program:
+
+```bash
+make run
+
+# Clean the generated files:
+
+```bash
+make clean
+
