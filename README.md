@@ -1,6 +1,4 @@
-Certainly! Here's the updated Markdown file with the usage section included:
 
-```markdown
 # compilers_project
 # Programming Language Interpreter
 
@@ -42,5 +40,5 @@ make run
 ```bash
 make clean
 ```
-```
+
 
