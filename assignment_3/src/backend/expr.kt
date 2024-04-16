@@ -340,10 +340,13 @@ class SizeExpr(val expr: Expr) : Expr() {
         return when (result) {
             is ArrayData -> IntData(result.elements.size)  
             is StringData -> IntData(result.value.length) 
-            else -> IntData(1)
+            is TupleData -> IntData(result.elements.size)
+            is SetData -> IntData(result.elements.size)
+            else -> IntData(0)
         }
     }
 }
+
 
 
 class TupleLiteral(val elements: List<Expr>) : Expr() {
