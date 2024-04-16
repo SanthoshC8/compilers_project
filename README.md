@@ -1,3 +1,6 @@
+Certainly! Here's the updated Markdown file with the usage section included:
+
+```markdown
 # compilers_project
 # Programming Language Interpreter
 
@@ -18,12 +21,13 @@ To use the interpreter, you'll need to have the following installed:
 
    ```bash
    git clone https://github.com/SanthoshC8/compilers_project.git 
+   ```
 
 ## Build the project:
 
 ```bash
 make build
-
+```
 
 ## Usage
 
@@ -31,3 +35,12 @@ make build
 
 ```bash
 make run
+```
+
+### Clean up generated files (optional):
+
+```bash
+make clean
+```
+```
+
