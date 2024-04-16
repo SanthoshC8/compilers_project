@@ -1,6 +1,10 @@
 
-# compilers_project
+# Compilers Final Project
 # Programming Language Interpreter
+
+### Santhosh Chelvaranjan 100787779
+### Khushbu Shah 100810818
+### Ibrahim Sharar 100753058 
 
 This project is a simple interpreter for a custom programming language implemented in Kotlin. It allows you to execute programs written in the custom language and supports various features such as variable assignment, arithmetic operations, loops, function definitions, and more.
 
