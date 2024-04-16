@@ -23,5 +23,3 @@ To use the interpreter, you'll need to have the following installed:
 
 ```bash
 make build
-
-
